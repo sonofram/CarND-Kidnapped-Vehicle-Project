@@ -45,12 +45,14 @@ int main()
 
   // Create particle filter
   ParticleFilter pf;
+  int rows=0;
 
   h.onMessage([&pf,&map,&delta_t,&sensor_range,&sigma_pos,&sigma_landmark](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
 
+	//rows = rows + 1;
     if (length && length > 2 && data[0] == '4' && data[1] == '2')
     {
 
@@ -75,6 +77,7 @@ int main()
 			pf.init(sense_x, sense_y, sense_theta, sigma_pos);
 		  }
 		  else {
+			  //cout << "after initialize" << std::endl;
 			// Predict the vehicle's next state from previous (noiseless control) data.
 		  	double previous_velocity = std::stod(j[1]["previous_velocity"].get<std::string>());
 			double previous_yawrate = std::stod(j[1]["previous_yawrate"].get<std::string>());
@@ -110,8 +113,10 @@ int main()
 				noisy_observations.push_back(obs);
         	}
 
+        	//cout << "calling updateWeights" << std::endl;
 		  // Update the weights and resample
 		  pf.updateWeights(sensor_range, sigma_landmark, noisy_observations, map);
+		  //cout << "calling resample" << std::endl;
 		  pf.resample();
 
 		  // Calculate and output the average weighted error of the particle filter over all time steps so far.

@@ -9,6 +9,8 @@
 #ifndef PARTICLE_FILTER_H_
 #define PARTICLE_FILTER_H_
 
+#include <algorithm>
+#include <random>
 #include "helper_functions.h"
 
 struct Particle {
@@ -23,6 +25,13 @@ struct Particle {
 	std::vector<double> sense_y;
 };
 
+struct LandmarkObs_MapId {
+
+	int id;				// Id of matching landmark in the map.
+	double x;			// Local (vehicle coordinates) x position of landmark observation [m]
+	double y;			// Local (vehicle coordinates) y position of landmark observation [m]
+	int map_id;			// closest map_id;
+};
 
 
 class ParticleFilter {
@@ -42,6 +51,7 @@ public:
 	
 	// Set of current particles
 	std::vector<Particle> particles;
+	std::default_random_engine gen;
 
 	// Constructor
 	// @param M Number of particles
@@ -77,8 +87,9 @@ public:
 	 *   a nearest-neighbors data association).
 	 * @param predicted Vector of predicted landmark observations
 	 * @param observations Vector of landmark observations
+	 * @param observations Vector of landmark observations along with closes map's land mark's id
 	 */
-	void dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations);
+	void dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations);//,std::vector<LandmarkObs_MapId>& data_map);
 	
 	/**
 	 * updateWeights Updates the weights for each particle based on the likelihood of the 
